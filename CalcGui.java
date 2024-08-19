@@ -90,34 +90,48 @@ public class CalcGui {
         private String currentInput = "";
         private double result = 0;
         private String command = "";
-        private ArrayList<String> inputs = new ArrayList();
+        private String inputs = "";
 
         @Override
         public void actionPerformed(ActionEvent e) {
             command = e.getActionCommand();
             if (command != "=") {
-                inputs.add(command);
-                updateDisplay(command);
+                inputs += command;
+                updateDisplay(inputs);
+                System.out.println("inputs: " + inputs);
+                System.out.println("inputs: " + inputs);
             } else {
                 calculate(inputs);
             }
         }
 
-        private void calculate(ArrayList<String> inputs) {
-            if (!currentInput.isEmpty()) {
-                double[] nums = new double[(inputs.size() + 1) / 2];
-                String[] operators = new String[(inputs.size() -1) / 2];
-                // for (int i = 0, j = 0; j < operators.length; i++,j++)
-                for (int i = 0; i < nums.length; i++) {
-                    if ("0123456789.".contains(inputs[i].toString())) {
-
+        private void calculate(String input) {
+            result = (double) input.charAt(0);
+            for (int i = 0; i < input.length() -1; i++) {
+                if ("+-*/".indexOf(input.charAt(i)) != -1) {
+                    // if current char is an operator +-*/, switch statement and call corresponding calc method
+                    char nextValue = input.charAt(i + 1);
+                    switch (input.charAt(i)) {
+                        case '+':
+                            result = calculator.add(result, nextValue);
+                            break;
+                        case '-':
+                            result = calculator.subtract(result, nextValue);
+                            break;
+                        case '*':
+                            result = calculator.multiply(result, nextValue);
+                            break;
+                        case '/':
+                            result = calculator.divide(result, nextValue);
+                            break;
                     }
                 }
-                currentInput = "";
+                
             }
 
             updateDisplay(Double.toString(result));
         }
+
 
         private void clear() {
             result = 0;
