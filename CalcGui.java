@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class CalcGui {
     private Calculator calculator;
@@ -86,87 +87,45 @@ public class CalcGui {
     }
 
     private class ButtonClickListener implements ActionListener {
-        private StringBuilder currentInput = new StringBuilder();
+        private String currentInput = "";
         private double result = 0;
-        private String lastOperator = "";
-        private boolean startNewInput = true;
-        // To make list of operands variable, I'll need to implement variable arguments, loop through, and initialize operand vars
-        // Then I'll need to change the boolean to "isFinalOperand"
+        private String command = "";
+        private ArrayList<String> inputs = new ArrayList();
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String command = e.getActionCommand();
-
-            if ("0123456789.".contains(command)) {
-                // If pressed button is a number or decimal
-                if (startNewInput) {
-                    // if the operator + - * / hasn't been clicked. Have to change this for variable args.
-                    currentInput = new StringBuilder(command);
-                    startNewInput = false;
-                } else {
-                    // for variable num of operands, I'll probably need a function to increment operand
-                    currentInput.append(command);
-                }
-            } else if ("+-*/".contains(command)) {
-                if (!currentInput.isEmpty()) {
-                    calculate();
-                    lastOperator = command;
-                    startNewInput = true;
-                }
-            } else if (command.equals("=")) {
-                calculate();
-                lastOperator = "";
-                startNewInput = true;
-            // else if for other buttons will go here
-            } else if (command.equals("C")) {
-                clear();
+            command = e.getActionCommand();
+            if (command != "=") {
+                inputs.add(command);
+                updateDisplay(command);
+            } else {
+                calculate(inputs);
             }
-
-            updateDisplay();
         }
 
-        private void calculate() {
-            if (!currentInput.toString().isEmpty()) {
-                double inputValue = Double.parseDouble(currentInput.toString());
-                if (lastOperator.isEmpty()) {
-                    result = inputValue;
-                } else {
-                    switch (lastOperator) {
-                        case "+":
-                            result = calculator.add(result, inputValue);
-                            break;
-                        case "-":
-                            result = calculator.subtract(result, inputValue);
-                            break;
-                        case "*":
-                            result = calculator.multiply(result, inputValue);
-                            break;
-                        case "/":
-                            result = calculator.divide(result, inputValue);
-                            break;
-                        default:
-                            result = inputValue;
+        private void calculate(ArrayList<String> inputs) {
+            if (!currentInput.isEmpty()) {
+                double[] nums = new double[(inputs.size() + 1) / 2];
+                String[] operators = new String[(inputs.size() -1) / 2];
+                // for (int i = 0, j = 0; j < operators.length; i++,j++)
+                for (int i = 0; i < nums.length; i++) {
+                    if ("0123456789.".contains(inputs[i].toString())) {
+
+                    }
                 }
-                }
-                currentInput = new StringBuilder();
+                currentInput = "";
             }
+
+            updateDisplay(Double.toString(result));
         }
 
         private void clear() {
             result = 0;
-            currentInput = new StringBuilder();
-            lastOperator = "";
-            startNewInput = true;
+            currentInput = "";
         }
 
-        private void updateDisplay() {
-            if (currentInput.length() > 0) {
-                display.setText(currentInput.toString());
-            } else if (!lastOperator.isEmpty()) {
-                display.setText(String.format("%.2f %s", result, lastOperator));
-            } else {
-                display.setText(String.format("%.2f", result));
-            }
+        private void updateDisplay(String input) {
+            display.setText(input);
         }
     }
 
